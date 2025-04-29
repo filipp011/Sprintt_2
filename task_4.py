@@ -1,5 +1,5 @@
 class EmployeeSalary:
-    hourly_payment = 400
+    hourly_payment = 400  # Устанавливаем почасовой уровень оплаты
 
     def __init__(self, name, hours=None, rest_days=0, email=None):
         self.name = name
@@ -8,48 +8,32 @@ class EmployeeSalary:
         self.email = email
 
     @classmethod
-    def create_employee(cls, name, rest_days=0, hours=None):
-        if hours is None:
-            hours = (7 - rest_days) * 8
+    def get_hours(cls, name, rest_days):
+        hours = (7 - rest_days) * 8  # Рассчитываем часы работы
         return cls(name=name, hours=hours, rest_days=rest_days)
 
     @classmethod
-    def get_email(cls, name, email=None):
-        if email is None:
-            email = f"{name}@email.com"
-        return email
+    def get_email(cls, name):
+        email = f"{name}@email.com"  # Генерируем email
+        return cls(name=name, email=email)
 
     @classmethod
     def set_hourly_payment(cls, new_payment):
-        cls.hourly_payment = new_payment
+        cls.hourly_payment = new_payment  # Меняем значение hourly_payment
 
     def salary(self):
-        effective_hours = self.get_hours()
-        return effective_hours * EmployeeSalary.hourly_payment
+        if self.hours is None:  # Если часы не известны, рассчитываем их
+            self.hours = (7 - self.rest_days) * 8
+        return self.hours * self.hourly_payment  # Рассчитываем заработную плату
 
-    def get_hours(self):
-        if self.hours is None:
-            return (7 - self.rest_days) * 8
-        return self.hours
+# Пример использования:
+employee1 = EmployeeSalary.get_hours("Иван", rest_days=2)
+print(f"Заработная плата {employee1.name}: {employee1.salary()}")
 
+# Генерация email для сотрудника
+employee1.email = EmployeeSalary.get_email(employee1.name).email
+print(f"Email {employee1.name}: {employee1.email}")
 
-if __name__ == "__main__":
-    employee1 = EmployeeSalary.create_employee(name="Ivan", rest_days=2)
-    employee1.email = EmployeeSalary.get_email(employee1.name)
-    
-    print(f"Employee Name: {employee1.name}")
-    print(f"Hours Worked: {employee1.get_hours()}")
-    print(f"Email: {employee1.email}")
-    print(f"Salary: {employee1.salary()}")
-
-    employee2 = EmployeeSalary.create_employee(name="Maria", hours=32)
-    
-    print(f"\nEmployee Name: {employee2.name}")
-    print(f"Hours Worked: {employee2.get_hours()}")
-    print(f"Email: {employee2.email}")
-    print(f"Salary: {employee2.salary()}")
-
-    EmployeeSalary.set_hourly_payment(500)
-    
-    print(f"\nNew Hourly Payment: {EmployeeSalary.hourly_payment}")
-    print(f"New Salary for {employee1.name}: {employee1.salary()}")
+# Изменение почасовой оплаты
+EmployeeSalary.set_hourly_payment(500)
+print(f"Новая заработная плата {employee1.name} с измененной оплатой: {employee1.salary()}")
